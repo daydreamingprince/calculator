@@ -56,3 +56,20 @@ button:focus-visible { outline: 2px dashed var(--ink); outline-offset: 4px; }
   .badge { font-size: .52rem; letter-spacing: .06em; } h1 { font-size: 2.1rem; }
 }
 @media (prefers-reduced-motion: reduce) { button { transition: none; } }
+/* Compact ink-line sound control; palette variables adapt to both themes. */
+.header-controls { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+#sound-toggle {
+  display: inline-grid; place-items: center; min-height: 32px; width: 34px;
+  padding: 5px; background: var(--card); color: var(--ink);
+}
+#sound-toggle:hover { background: var(--hover); }
+#sound-toggle svg { display: block; pointer-events: none; }
+#sound-toggle .sound-cross { display: none; }
+#sound-toggle[data-muted="true"] .sound-waves { display: none; }
+#sound-toggle[data-muted="true"] .sound-cross { display: block; }
+:root[data-theme="dark"] #sound-toggle { background: var(--wash); color: var(--ink); }
+:root[data-theme="dark"] #sound-toggle:hover { background: var(--hover); }
+@media (max-width: 350px) {
+  .masthead { gap: 6px; flex-wrap: wrap; }
+  .header-controls { gap: 6px; }
+}

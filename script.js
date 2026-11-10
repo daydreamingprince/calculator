@@ -111,3 +111,92 @@ render();
     if (!explicit) applyTheme(event.matches ? 'dark' : 'light');
   });
 })();
+// Sound feedback is appended: calculator and theme logic above remain untouched.
+(() => {
+  const toggle = document.querySelector('#sound-toggle');
+  const screen = document.querySelector('#display');
+  const storageKey = 'calculator-sound';
+  let enabled = true;
+  try { enabled = localStorage.getItem(storageKey) !== 'off'; } catch (_) {}
+  let snd = null;
+  let ready = false;
+  if (typeof Snd === 'function') {
+    // No automatic class listeners: one sound per delegated interaction.
+    snd = new Snd({ easySetup: false, preloadSoundKit: null });
+    snd.load(Snd.KITS.SND02).then(() => { ready = true; }).catch(() => {
+      // Sound is progressive enhancement; offline calculators still work.
+      ready = false;
+    });
+  }
+  function updateToggle() {
+    toggle.dataset.muted = String(!enabled);
+    toggle.setAttribute('aria-pressed', String(!enabled));
+    const label = enabled ? 'Mute sounds' : 'Unmute sounds';
+    toggle.setAttribute('aria-label', label);
+    toggle.title = label;
+  }
+  function play(key) {
+    if (!enabled || !ready || !snd) return;
+    try { snd.play(key, { volume: 0.25 }); } catch (_) {}
+  }
+  function stopSounds() {
+    if (!snd || typeof Snd === 'undefined') return;
+    // Stop tails of previous notes, but let the off confirmation finish.
+    Object.values(Snd.SOUNDS).forEach(key => {
+      try { snd.stop(key); } catch (_) {}
+    });
+  }
+  updateToggle();
+  toggle.addEventListener('click', () => {
+    if (enabled) {
+      stopSounds();
+      play('toggle_off'); // Audible confirmation BEFORE disabling future sounds.
+      enabled = false;
+    } else {
+      enabled = true;
+      play('toggle_on');
+    }
+    updateToggle();
+    try { localStorage.setItem(storageKey, enabled ? 'on' : 'off'); } catch (_) {}
+  });
+  // Run after existing calculator/theme listeners, including the library's
+  // window click initializer. Error feedback replaces the normal key sound.
+  function feedback(key, wasError) {
+    const isError = screen.textContent === 'Error';
+    play(isError && !wasError ? 'caution' : key);
+  }
+  let wasError = false;
+  document.addEventListener('click', () => {
+    wasError = screen.textContent === 'Error';
+  }, true);
+  window.addEventListener('click', event => {
+    const button = event.target.closest('button');
+    if (!button || button === toggle) return;
+    if (button.id === 'theme-toggle') {
+      play(document.documentElement.dataset.theme === 'light' ? 'toggle_on' : 'toggle_off');
+      return;
+    }
+    if (!button.closest('.keys')) return;
+    const action = button.dataset.action;
+    const key = button.dataset.digit !== undefined || action === 'decimal' ? 'tap'
+      : button.dataset.op || ['percent', 'sign', 'negate'].includes(action) ? 'button'
+      : action === 'equals' ? 'notification'
+      : action === 'clear' ? 'toggle_off'
+      : action === 'backspace' ? 'tap' : null;
+    if (key) feedback(key, wasError);
+  });
+  // Capture the prior display without intercepting or changing keyboard input.
+  let keyWasError = false;
+  document.addEventListener('keydown', () => {
+    keyWasError = screen.textContent === 'Error';
+  }, true);
+  document.addEventListener('keydown', event => {
+    if (event.ctrlKey || event.metaKey || event.altKey) return;
+    const key = event.key;
+    const sound = /^[0-9.]$/.test(key) || key === 'Backspace' ? 'tap'
+      : ['+', '-', '*', '/', '%'].includes(key) ? 'button'
+      : ['Enter', '='].includes(key) ? 'notification'
+      : ['Escape', 'Delete', 'c', 'C'].includes(key) ? 'toggle_off' : null;
+    if (sound) feedback(sound, keyWasError);
+  });
+})();
