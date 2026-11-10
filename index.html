@@ -3,14 +3,29 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#111827">
-  <title>Simple Calculator</title>
+  <meta name="theme-color" content="#f7f2e9">
+  <title>Simple Calculator · Paper &amp; Ink</title>
+  <script>
+    // Apply the saved palette before paint; storage may be unavailable in private contexts.
+    (() => {
+      let theme;
+      try { theme = localStorage.getItem('calculator-theme'); } catch (_) {}
+      if (theme !== 'light' && theme !== 'dark') {
+        theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      document.documentElement.dataset.theme = theme;
+    })();
+  </script>
   <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
 </head>
 <body>
   <main class="calculator" aria-label="Calculator">
-    <header><span class="badge">EVERYDAY TOOLS</span><h1>Calculator<span>.</span></h1></header>
+    <header>
+      <div class="masthead"><span class="badge">PAPER &amp; INK / No. 01</span><button id="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false">☾ Dark</button></div>
+      <h1>Calculator<span>.</span></h1>
+      <p class="subtitle">A little space to work things out.</p>
+    </header>
     <section class="screen" aria-label="Calculator display">
       <div id="history" class="history">Ready when you are</div>
       <output id="display" aria-live="polite" aria-atomic="true">0</output>
