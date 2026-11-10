@@ -123,7 +123,7 @@ render();
   if (typeof Snd === 'function') {
     // No automatic class listeners: one sound per delegated interaction.
     snd = new Snd({ easySetup: false, preloadSoundKit: null });
-    snd.load(Snd.KITS.SND02).then(() => { ready = true; }).catch(() => {
+    snd.load(Snd.KITS.SND01).then(() => { ready = true; }).catch(() => {
       // Sound is progressive enhancement; offline calculators still work.
       ready = false;
     });
