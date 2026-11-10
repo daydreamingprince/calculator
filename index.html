@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111827">
+  <title>Simple Calculator</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <main class="calculator" aria-label="Calculator">
+    <header><span class="badge">EVERYDAY TOOLS</span><h1>Calculator<span>.</span></h1></header>
+    <section class="screen" aria-label="Calculator display">
+      <div id="history" class="history">Ready when you are</div>
+      <output id="display" aria-live="polite" aria-atomic="true">0</output>
+    </section>
+    <div class="keys">
+      <button data-action="clear" class="utility">C</button>
+      <button data-action="backspace" class="utility" aria-label="Backspace">⌫</button>
+      <button data-action="percent" class="utility" aria-label="Percent">%</button>
+      <button data-op="/" class="operator" aria-label="Divide">÷</button>
+      <button data-digit="7">7</button><button data-digit="8">8</button><button data-digit="9">9</button>
+      <button data-op="*" class="operator" aria-label="Multiply">×</button>
+      <button data-digit="4">4</button><button data-digit="5">5</button><button data-digit="6">6</button>
+      <button data-op="-" class="operator" aria-label="Subtract">−</button>
+      <button data-digit="1">1</button><button data-digit="2">2</button><button data-digit="3">3</button>
+      <button data-op="+" class="operator" aria-label="Add">+</button>
+      <button data-digit="0" class="zero">0</button><button data-action="decimal" aria-label="Decimal point">.</button>
+      <button data-action="equals" class="equals" aria-label="Equals">=</button>
+    </div>
+    <p class="hint">Keyboard friendly · Enter to solve · Esc to clear</p>
+  </main>
+</body>
+</html>
