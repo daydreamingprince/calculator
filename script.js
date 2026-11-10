@@ -83,3 +83,31 @@ document.addEventListener('keydown', event => {
   if (action) { event.preventDefault(); action(); }
 });
 render();
+
+// Theme controls are isolated from the calculator's arithmetic and keyboard logic.
+(() => {
+  const root = document.documentElement;
+  const toggle = document.querySelector('#theme-toggle');
+  const preference = window.matchMedia('(prefers-color-scheme: dark)');
+  let saved;
+  try { saved = localStorage.getItem('calculator-theme'); } catch (_) {}
+  let explicit = saved === 'light' || saved === 'dark';
+  function applyTheme(theme) {
+    root.dataset.theme = theme;
+    const dark = theme === 'dark';
+    toggle.textContent = dark ? '☀ Light' : '☾ Dark';
+    toggle.setAttribute('aria-label', `Switch to ${dark ? 'light' : 'dark'} mode`);
+    toggle.setAttribute('aria-pressed', String(dark));
+    document.querySelector('meta[name="theme-color"]').content = dark ? '#16130f' : '#f7f2e9';
+  }
+  applyTheme(explicit ? saved : preference.matches ? 'dark' : 'light');
+  toggle.addEventListener('click', () => {
+    const theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    explicit = true;
+    applyTheme(theme);
+    try { localStorage.setItem('calculator-theme', theme); } catch (_) {}
+  });
+  preference.addEventListener('change', event => {
+    if (!explicit) applyTheme(event.matches ? 'dark' : 'light');
+  });
+})();
